@@ -67,7 +67,10 @@ Public Sub TryLinkColumn()
     Set targetColumn = TryGetListColumnFromSelection(Selection)
     If targetColumn Is Nothing Then Exit Sub
     
-    MsgBox "check if this worksheet has named ranges"
+    If Not vmMapKeys.IsValid Then
+        MsgBox "This table has not been linked!", vbExclamation + vbOKOnly, "Cannot link column"
+        Exit Sub
+    End If
     
     If DoesListColumnHaveData(targetColumn) Then
         If vbNo = MsgBox("Replace existing data?", vbExclamation + vbYesNo + vbDefaultButton2, "Link Column") Then
@@ -78,13 +81,42 @@ Public Sub TryLinkColumn()
     With New frmSelectColumn
         If .ShowDialog(vmColSel) Then
             If vmColSel.IsValid Then
-                DoLinkColumn targetColumn
+                DoLinkColumn targetColumn, vmColSel.SelectedColumn
             End If
         End If
     End With
 End Sub
 
-Private Sub DoLinkColumn(ByRef targetColumn As ListColumn)
+Public Sub TryLinkColumns()
+    
+    If Not vmMapKeys.IsValid Then
+        MsgBox "This table has not been linked!", vbExclamation + vbOKOnly, "Cannot link column"
+        Exit Sub
+    End If
+    
+    With New frmSelectColumns
+        If .ShowDialog(vmColSel) Then
+            If vmColSel.IsValid Then
+                DoLinkColumns
+            End If
+        End If
+    End With
+End Sub
+
+Private Sub DoLinkColumns()
+    Dim lo As ListObject
+    Dim dstCol As ListColumn
+    Dim srcCol As ListColumn
+    
+    Set lo = vmMapKeys.DestinationColumn.parent
+
+    For Each srcCol In vmColSel.SelectedColumns
+        Set dstCol = lo.ListColumns.Add(lo.ListColumns.Count + 1)
+        DoLinkColumn dstCol, srcCol
+    Next srcCol
+End Sub
+
+Private Sub DoLinkColumn(ByRef targetColumn As ListColumn, ByRef sourceColumn As ListColumn)
     Dim formula As String
     Dim localKey As String
     Dim externalKey As String
@@ -93,19 +125,23 @@ Private Sub DoLinkColumn(ByRef targetColumn As ListColumn)
     
     localKey = GetNamedRange(NAMED_RANGE_FOR_KEY).Offset(-1, 0).Cells(1, 1).Value2
     externalKey = TryGetListColumnFromSelection(GetNamedRange(NAMED_RANGE_FOR_TABLE)).DataBodyRange.Address(External:=True)
-    externalCol = vmColSel.SelectedColumn.DataBodyRange.Address(External:=True)
-    Set srcCell = vmColSel.SelectedColumn.DataBodyRange.Cells(1, 1)
+    externalCol = sourceColumn.DataBodyRange.Address(External:=True)
+    Set srcCell = sourceColumn.DataBodyRange.Cells(1, 1)
     
-    formula = "=IFERROR(INDEX(" & externalCol & ",MATCH([@[" & localKey & "]], " & externalKey & ", 0)),"""")"
+    formula = "INDEX(" & externalCol & ",MATCH([@[" & localKey & "]], " & externalKey & ", 0))"
+    formula = "IF(" & formula & "="""", """", " & formula & ")"
+    formula = "IFERROR(" & formula & ", """")"
+    formula = "=" & formula
     
     With targetColumn.DataBodyRange
         .formula = formula
         .NumberFormat = srcCell.NumberFormat
+        .ColumnWidth = srcCell.ColumnWidth
         .HorizontalAlignment = srcCell.HorizontalAlignment
     End With
     
     If vmColSel.ReplaceColumnHeader Then
-        targetColumn.name = vmColSel.SelectedColumn.name
+        targetColumn.name = sourceColumn.name
     End If
 End Sub
 
@@ -154,7 +190,7 @@ End Function
 
 Public Sub SaveViewModel()
     AddNamedRange NAMED_RANGE_FOR_KEY, vmMapKeys.DestinationColumn.DataBodyRange
-    AddNamedRange NAMED_RANGE_FOR_TABLE, vmMapKeys.SourceColumn.DataBodyRange
+    AddNamedRange NAMED_RANGE_FOR_TABLE, vmMapKeys.sourceColumn.DataBodyRange
 End Sub
 
 Private Function AddNamedRange(ByVal rangeName As String, ByRef rng As range) As range
@@ -162,10 +198,22 @@ Private Function AddNamedRange(ByVal rangeName As String, ByRef rng As range) As
 End Function
 
 Private Function GetNamedRange(ByVal rangeName As String) As range
+    Dim rangeText As String
+    Dim curWB As Workbook
+    Set curWB = ActiveWorkbook
     If HasNamedRange(rangeName) = False Then Exit Function
     ' This will fail for external table's range if the file is not open.
     ' Need to try and open it
-    On Error GoTo Catch
+    'On Error GoTo Catch
+    rangeText = ws.Names(ws.name & "!" & rangeName).RefersTo
+    If IsWorkbookOpen(GetFilenameFromRangeText(rangeText)) = False Then
+        If GetPathFromRangeText(rangeText) <> vbNullString Then
+            Application.ScreenUpdating = False
+            Call Application.Workbooks.Open(GetPathFromRangeText(rangeText) & GetFilenameFromRangeText(rangeText))
+            curWB.Activate
+            Application.ScreenUpdating = True
+        End If
+    End If
     Set GetNamedRange = ws.Names(ws.name & "!" & rangeName).RefersToRange
     GoTo Finally
     

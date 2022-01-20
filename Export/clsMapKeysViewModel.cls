@@ -13,15 +13,15 @@ Option Explicit
 Private Type TClsMapKeysViewModel
     Source As String
     Destination As String
-    SourceColumn As ListColumn
+    sourceColumn As ListColumn
     DestinationColumn As ListColumn
 End Type
 
 Private this As TClsMapKeysViewModel
 
 ' Properties
-Public Property Get SourceColumn() As ListColumn
-    Set SourceColumn = this.SourceColumn
+Public Property Get sourceColumn() As ListColumn
+    Set sourceColumn = this.sourceColumn
 End Property
 
 Public Property Get DestinationColumn() As ListColumn
@@ -34,7 +34,7 @@ End Property
 
 Public Property Let Source(ByVal RHS As String)
     this.Source = RHS
-    Set this.SourceColumn = GetListColumnFromRangeText(RHS)
+    Set this.sourceColumn = GetListColumnFromRangeText(RHS)
 End Property
 
 Public Property Get Destination() As String
@@ -52,7 +52,7 @@ End Property
 
 ' Private Functions
 Public Function IsValid() As Boolean
-    If (SourceColumn Is Nothing) Then Exit Function
+    If (sourceColumn Is Nothing) Then Exit Function
     If (DestinationColumn Is Nothing) Then Exit Function
     IsValid = True
 End Function

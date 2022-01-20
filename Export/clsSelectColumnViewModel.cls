@@ -17,12 +17,18 @@ Public Event ItemSelected()
 Private Type TClsSelectColumnViewModel
     ListObject As ListObject
     SelectedColumn As ListColumn
+    SelectedColumns As Collection
     Columns As Collection
     SearchCriteria As String
     ReplaceColumnHeader As Boolean
 End Type
 
 Private this As TClsSelectColumnViewModel
+
+' Properties
+Public Property Get SelectedColumns() As Collection
+    Set SelectedColumns = this.SelectedColumns
+End Property
 
 Public Property Get ReplaceColumnHeader() As Boolean
     ReplaceColumnHeader = this.ReplaceColumnHeader
@@ -67,6 +73,7 @@ Public Property Let SearchCriteria(ByVal RHS As String)
     PopulateColumns
 End Property
 
+' Methods
 Public Function IsValid() As Boolean
     IsValid = Not this.SelectedColumn Is Nothing
 End Function
@@ -82,12 +89,12 @@ Private Sub PopulateColumns()
     
     For Each lc In this.ListObject.ListColumns
         If this.SearchCriteria = vbNullString Then
-            this.Columns.Add CStr(lc.name), lc.name
+            this.Columns.Add lc, lc.name
         ElseIf lc.name Like this.SearchCriteria Then
-            this.Columns.Add CStr(lc.name), lc.name
+            this.Columns.Add lc, lc.name
         End If
     Next lc
-    
+
     RaiseEvent CollectionChanged
 End Sub
 
@@ -102,12 +109,33 @@ Private Sub ClearCollection(ByVal coll As Collection)
     Next i
 End Sub
 
-Public Sub TrySelect(ByVal key As String)
+Public Sub TrySelect(ByVal key As String, Optional ByVal selected As Boolean = True)
     Dim lc As ListColumn
+
     For Each lc In this.ListObject.ListColumns
         If lc.name = key Then
             Set SelectedColumn = lc
-            Exit Sub
         End If
     Next lc
+    
+    If selected Then
+        this.SelectedColumns.Add SelectedColumn
+    Else
+        Set this.SelectedColumns = RemoveFromCollection(this.SelectedColumns, SelectedColumn)
+        Set SelectedColumn = Nothing
+    End If
 End Sub
+
+Private Sub Class_Initialize()
+    Set this.SelectedColumns = New Collection
+End Sub
+
+Private Function RemoveFromCollection(ByRef coll As Collection, RHS As Variant) As Collection
+    Set RemoveFromCollection = New Collection
+    Dim v As Variant
+    For Each v In coll
+        If Not v Is RHS Then
+            RemoveFromCollection.Add v
+        End If
+    Next v
+End Function

@@ -75,7 +75,7 @@ End Sub
 Private Sub txtSearch_Change()
     Model.SearchCriteria = Me.txtSearch & "*"
     If Model.Columns.Count > 0 Then
-        Me.lbColumns.Selected(0) = True
+        Me.lbColumns.selected(0) = True
     End If
 End Sub
 
