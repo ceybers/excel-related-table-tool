@@ -16,6 +16,7 @@ Attribute VB_Exposed = False
 '@Folder "SelectTable"
 Option Explicit
 
+'@MemberAttribute VB_VarHelpID, -1
 Private WithEvents vm As clsSelectTableViewModel
 Attribute vm.VB_VarHelpID = -1
 Private Const ICON_SIZE As Integer = 16
@@ -127,11 +128,11 @@ End Sub
 Private Sub TryHighlightActive()
     Dim nd As Node
     For Each nd In Me.tvTables.Nodes
-        If nd.key = vm.ActiveTable.range.Address(external:=True) Then
+        If nd.key = vm.ActiveTable.range.Address(External:=True) Then
             nd.Selected = True
             nd.EnsureVisible
         End If
-    End If
+    Next nd
 End Sub
 
 Private Sub TryAddNode(ByRef obj As Object)
@@ -161,12 +162,12 @@ Private Sub TryAddNode(ByRef obj As Object)
         
     ElseIf TypeOf obj Is ListObject Then
         Set lo = obj
-        key = lo.range.Address(external:=True)
+        key = lo.range.Address(External:=True)
         parent = "[" & lo.parent.parent.name & "]" & lo.parent.name
         image = "lo"
         text = lo.name
         If Not vm.ActiveTable Is Nothing Then
-            If vm.ActiveTable.range.Address(external:=True) = lo.range.Address(external:=True) Then
+            If vm.ActiveTable.range.Address(External:=True) = lo.range.Address(External:=True) Then
                 image = "activeLo"
                 text = text & " (active)"
             End If
@@ -195,6 +196,6 @@ Private Sub PopulateImageList()
 End Sub
 
 Private Sub AddImageListImage(ByRef il As ImageList, ByVal key As String, ByVal imageMso As String)
-    Call il.ListImages.Add(1, key, Application.CommandBars.GetImageMso(imageMso, ICON_SIZE, ICON_SIZE))
+    il.ListImages.Add 1, key, Application.CommandBars.GetImageMso(imageMso, ICON_SIZE, ICON_SIZE)
 End Sub
 

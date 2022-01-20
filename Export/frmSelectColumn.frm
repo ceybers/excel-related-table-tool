@@ -16,6 +16,7 @@ Attribute VB_Exposed = False
 '@Folder "SelectColumn"
 Option Explicit
 
+'@MemberAttribute VB_VarHelpID, -1
 Private WithEvents Model As clsSelectColumnViewModel
 Attribute Model.VB_VarHelpID = -1
 
@@ -25,13 +26,20 @@ End Type
 
 Private this As TFrmSelectColumnView
 
+Private Sub chkReplaceDestColName_Click()
+    Model.ReplaceColumnHeader = Me.chkReplaceDestColName.Value
+End Sub
+
 Private Sub cmbCancel_Click()
     OnCancel
 End Sub
 
+Private Sub cmbClearSearch_Click()
+    Me.txtSearch.text = vbNullString
+    Me.txtSearch.SetFocus
+End Sub
+
 Private Sub cmbOK_Click()
-    'this.Model.Source = Me.refSource.Text
-    'this.Model.Destination = Me.refDestination.Text
     Hide
 End Sub
 
@@ -41,7 +49,15 @@ Private Sub lbColumns_Change()
 End Sub
 
 Private Sub lbColumns_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
-    Hide
+    If Not Model.SelectedColumn Is Nothing Then
+        Hide
+    End If
+End Sub
+
+Private Sub lbColumns_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If (KeyAscii = 13) And (Not Model.SelectedColumn Is Nothing) Then
+        Hide
+    End If
 End Sub
 
 Private Sub Model_CollectionChanged()
@@ -58,11 +74,16 @@ End Sub
 
 Private Sub txtSearch_Change()
     Model.SearchCriteria = Me.txtSearch & "*"
+    If Model.Columns.Count > 0 Then
+        Me.lbColumns.Selected(0) = True
+    End If
 End Sub
 
 Private Sub UserForm_Activate()
     Model.SearchCriteria = vbNullString
     Me.cmbOK.Enabled = False
+    Me.cmbClearSearch.Picture = Application.CommandBars.GetImageMso("Delete", 16, 16)
+    Model.ReplaceColumnHeader = Me.chkReplaceDestColName.Value
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)

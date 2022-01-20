@@ -1,4 +1,5 @@
 Attribute VB_Name = "modTestSelectTable"
+'@IgnoreModule
 '@Folder "SelectTable"
 Option Explicit
 
@@ -7,7 +8,7 @@ Public Sub TestSelectTable()
     Set lo = TrySelectTable
     
     If Not lo Is Nothing Then
-        Debug.Print "You chose '" & lo.range.Address(external:=True) & "'"
+        Debug.Print "You chose '" & lo.range.Address(External:=True) & "'"
     End If
 End Sub
 

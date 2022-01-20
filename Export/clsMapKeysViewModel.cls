@@ -19,6 +19,7 @@ End Type
 
 Private this As TClsMapKeysViewModel
 
+' Properties
 Public Property Get SourceColumn() As ListColumn
     Set SourceColumn = this.SourceColumn
 End Property
@@ -49,9 +50,10 @@ Public Property Get Self() As clsMapKeysViewModel
     Set Self = Me
 End Property
 
+' Private Functions
 Public Function IsValid() As Boolean
     If (SourceColumn Is Nothing) Then Exit Function
-    'If (DestinationColumn Is Nothing) Then Exit Function
+    If (DestinationColumn Is Nothing) Then Exit Function
     IsValid = True
 End Function
 

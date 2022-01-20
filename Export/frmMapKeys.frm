@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmMapKeys 
    Caption         =   "Map Related Table"
-   ClientHeight    =   2775
+   ClientHeight    =   2295
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   3240
+   ClientWidth     =   5280
    OleObjectBlob   =   "frmMapKeys.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -47,6 +47,15 @@ End Sub
 
 Public Function ShowDialog(ByVal viewModel As Object) As Boolean
     Set this.Model = viewModel
+    
+    If this.Model.Source <> vbNullString Then
+        Me.refSource.text = this.Model.Source
+    End If
+    
+    If this.Model.Source <> vbNullString Then
+        Me.refDestination.text = this.Model.Destination
+    End If
+    
     Show
     ShowDialog = Not this.IsCancelled
 End Function

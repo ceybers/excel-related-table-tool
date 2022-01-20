@@ -19,9 +19,18 @@ Private Type TClsSelectColumnViewModel
     SelectedColumn As ListColumn
     Columns As Collection
     SearchCriteria As String
+    ReplaceColumnHeader As Boolean
 End Type
 
 Private this As TClsSelectColumnViewModel
+
+Public Property Get ReplaceColumnHeader() As Boolean
+    ReplaceColumnHeader = this.ReplaceColumnHeader
+End Property
+
+Public Property Let ReplaceColumnHeader(ByVal RHS As Boolean)
+    this.ReplaceColumnHeader = RHS
+End Property
 
 Public Property Get ListObject() As ListObject
     Set ListObject = this.ListObject

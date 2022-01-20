@@ -69,7 +69,7 @@ Private Function GetAllTables() As Collection
         For Each ws In wb.Worksheets
             For Each lo In ws.ListObjects
                 If this.Criteria = vbNullString Or lo.name Like this.Criteria Then
-                    GetAllTables.Add lo, lo.range.Address(external:=True)
+                    GetAllTables.Add lo, lo.range.Address(External:=True)
                 End If
             Next lo
         Next ws
@@ -79,7 +79,7 @@ End Function
 Public Sub TrySelect(ByVal key As String)
     Dim lo As ListObject
     For Each lo In this.Tables
-        If lo.range.Address(external:=True) = key Then
+        If lo.range.Address(External:=True) = key Then
             Set SelectedTable = lo
             Exit Sub
         End If
