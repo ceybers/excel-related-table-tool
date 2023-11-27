@@ -151,3 +151,4 @@ End Function
 Private Function GetListColumnColumnAddress(ByRef lc As ListColumn) As String
     GetListColumnColumnAddress = Split(lc.range.EntireColumn.Address(False, False), ":")(0)
 End Function
+

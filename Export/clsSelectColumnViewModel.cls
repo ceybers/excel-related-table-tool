@@ -139,3 +139,4 @@ Private Function RemoveFromCollection(ByRef coll As Collection, RHS As Variant) 
         End If
     Next v
 End Function
+

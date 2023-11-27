@@ -59,3 +59,4 @@ Public Function ShowDialog(ByVal viewModel As Object) As Boolean
     Show
     ShowDialog = Not this.IsCancelled
 End Function
+

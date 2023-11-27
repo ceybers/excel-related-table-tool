@@ -28,3 +28,4 @@ Private Sub PrintResult(ByRef vm As clsSelectColumnViewModel)
         Debug.Print v.name
     Next v
 End Sub
+

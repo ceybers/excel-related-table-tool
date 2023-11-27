@@ -4,6 +4,10 @@ Option Explicit
 
 Private Const COMMAND_BAR As String = "List Range Popup"
 
+Public Sub Main()
+    MapTable
+End Sub
+
 Public Sub MapTable()
     With New clsRelatedTable
         Set .Worksheet = Selection.parent
@@ -63,3 +67,4 @@ Private Function TryGetCommandBarControl(ByVal commandBarName As String, ByVal c
         End If
     Next cb
 End Function
+

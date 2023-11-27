@@ -237,3 +237,4 @@ Private Function HasNamedRange(ByVal rangeName As String) As Boolean
         End If
     Next nm
 End Function
+
